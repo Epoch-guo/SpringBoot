@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.epoch.mapper.ScoreMapper">
+
+    <resultMap id="BaseResultMap" type="com.epoch.entity.Score">
+        <id column="score_id" property="id"/>
+        <result column="submission_id" property="submissionId"/>
+        <result column="teacher_id" property="teacherId"/>
+        <result column="score" property="score"/>
+        <result column="comment" property="comment"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        score_id, submission_id, teacher_id, score, comment, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.epoch.entity.Score" useGeneratedKeys="true" keyProperty="id" keyColumn="score_id">
+        insert into score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="submissionId != null">
+                submission_id,
+            </if>
+            <if test="teacherId != null">
+                teacher_id,
+            </if>
+            <if test="score != null">
+                score,
+            </if>
+            <if test="comment != null">
+                comment,
+            </if>
+            create_time,
+            update_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="submissionId != null">
+                #{submissionId},
+            </if>
+            <if test="teacherId != null">
+                #{teacherId},
+            </if>
+            <if test="score != null">
+                #{score},
+            </if>
+            <if test="comment != null">
+                #{comment},
+            </if>
+            now(),
+            now(),
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.epoch.entity.Score">
+        update score
+        <set>
+            <if test="score != null">
+                score = #{score},
+            </if>
+            <if test="comment != null">
+                comment = #{comment},
+            </if>
+            update_time = now(),
+        </set>
+        where score_id = #{id}
+    </update>
+
+    <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from score
+        where score_id = #{scoreId}
+    </select>
+
+    <select id="getBySubmissionId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from score
+        where submission_id = #{submissionId}
+    </select>
+
+    <select id="listByContestId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select 
+        s.*
+        from score s
+        join submission sub on s.submission_id = sub.submission_id
+        where sub.contest_id = #{contestId}
+    </select>
+    
+    <select id="listByTeacherId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from score
+        where teacher_id = #{teacherId}
+        order by create_time desc
+    </select>
+    
+    <select id="listBySubmissionIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from score
+        where submission_id in
+        <foreach collection="submissionIds" item="submissionId" open="(" separator="," close=")">
+            #{submissionId}
+        </foreach>
+    </select>
+    
+    <select id="listByContestIdAndClassId" resultMap="BaseResultMap">
+        select 
+        s.*
+        from score s
+        join submission sub on s.submission_id = sub.submission_id
+        join user u on sub.student_id = u.user_id
+        where sub.contest_id = #{contestId}
+        <if test="classId != null">
+            and u.class_id = #{classId}
+        </if>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from score
+        where score_id = #{scoreId}
+    </delete>
+
+    <delete id="deleteBySubmissionId" parameterType="java.lang.Long">
+        delete from score
+        where submission_id = #{submissionId}
+    </delete>
+
+    <!-- 使用视图查询 -->
+    <select id="listByContestIdFromView" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select s.*
+        from score_contest_view s
+        where s.contest_id = #{contestId}
+        order by s.create_time desc
+    </select>
+    
+    <select id="listByContestIdAndTeacherId" resultMap="BaseResultMap">
+        select 
+            score_id, submission_id, teacher_id, score, comment, create_time, update_time
+        from score_contest_view
+        where contest_id = #{contestId} and teacher_id = #{teacherId}
+    </select>
+
+    <select id="listByStudentId" resultMap="BaseResultMap">
+        select s.*
+        from score s
+        join submission sub on s.submission_id = sub.submission_id
+        where sub.student_id = #{studentId}
+        order by s.create_time desc
+    </select>
+
+    <select id="countScoresByRange" resultType="java.lang.Integer">
+        select count(*)
+        from score s
+        join submission sub on s.submission_id = sub.submission_id
+        where sub.contest_id = #{contestId}
+        and s.score >= #{minScore}
+        and s.score &lt;= #{maxScore}
+    </select>
+
+    <select id="countByTeacherId" resultType="java.lang.Integer">
+        select count(*)
+        from score
+        where teacher_id = #{teacherId}
+    </select>
+
+    <select id="getAverageScoreByTeacherId" resultType="java.lang.Double">
+        select ifnull(avg(score), 0)
+        from score
+        where teacher_id = #{teacherId}
+    </select>
+    
+    <select id="getAverageScoreByContestId" resultType="java.lang.Double">
+        select ifnull(avg(s.score), 0)
+        from score s
+        join submission sub on s.submission_id = sub.submission_id
+        where sub.contest_id = #{contestId}
+    </select>
+    
+    <select id="getHighestScoreByContestId" resultType="java.lang.Integer">
+        select ifnull(max(s.score), 0)
+        from score s
+        join submission sub on s.submission_id = sub.submission_id
+        where sub.contest_id = #{contestId}
+    </select>
+    
+    <select id="getLowestScoreByContestId" resultType="java.lang.Integer">
+        select ifnull(min(s.score), 0)
+        from score s
+        join submission sub on s.submission_id = sub.submission_id
+        where sub.contest_id = #{contestId}
+    </select>
+
+</mapper>

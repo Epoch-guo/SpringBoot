@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.epoch.mapper.RegistrationMapper">
+
+    <resultMap id="BaseResultMap" type="com.epoch.entity.Registration">
+        <id column="registration_id" property="id"/>
+        <result column="contest_id" property="contestId"/>
+        <result column="user_id" property="userId"/>
+        <result column="is_team" property="isTeam"/>
+        <result column="team_name" property="teamName"/>
+        <result column="team_description" property="teamDescription"/>
+        <result column="max_members" property="maxMembers"/>
+        <result column="attachment_path" property="attachmentPath"/>
+        <result column="status" property="status"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        registration_id, contest_id, user_id, is_team, team_name, team_description, max_members, attachment_path, status, created_time
+    </sql>
+
+    <insert id="insert" parameterType="com.epoch.entity.Registration" useGeneratedKeys="true" keyProperty="id" keyColumn="registration_id">
+        insert into registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contestId != null">
+                contest_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="isTeam != null">
+                is_team,
+            </if>
+            <if test="teamName != null">
+                team_name,
+            </if>
+            <if test="teamDescription != null">
+                team_description,
+            </if>
+            <if test="maxMembers != null">
+                max_members,
+            </if>
+            <if test="attachmentPath != null">
+                attachment_path,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contestId != null">
+                #{contestId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="isTeam != null">
+                #{isTeam},
+            </if>
+            <if test="teamName != null">
+                #{teamName},
+            </if>
+            <if test="teamDescription != null">
+                #{teamDescription},
+            </if>
+            <if test="maxMembers != null">
+                #{maxMembers},
+            </if>
+            <if test="attachmentPath != null">
+                #{attachmentPath},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.epoch.entity.Registration">
+        update registration
+        <set>
+            <if test="teamName != null">
+                team_name = #{teamName},
+            </if>
+            <if test="teamDescription != null">
+                team_description = #{teamDescription},
+            </if>
+            <if test="maxMembers != null">
+                max_members = #{maxMembers},
+            </if>
+            <if test="attachmentPath != null">
+                attachment_path = #{attachmentPath},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where registration_id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        update registration
+        set status = #{status}
+        where registration_id = #{id}
+    </update>
+
+    <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from registration
+        where registration_id = #{id}
+    </select>
+
+    <select id="getByContestIdAndUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from registration
+        where contest_id = #{contestId} and user_id = #{userId}
+    </select>
+
+    <select id="listByContestId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from registration
+        where contest_id = #{contestId}
+        order by created_time desc
+    </select>
+
+    <select id="listByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from registration
+        where user_id = #{userId}
+        order by created_time desc
+    </select>
+
+    <select id="listAllTeams" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from registration
+        where is_team = true
+        order by created_time desc
+    </select>
+
+    <select id="countByContestId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        select count(*)
+        from registration
+        where contest_id = #{contestId}
+    </select>
+
+    <select id="listLeaderIdsByContestId" resultType="java.lang.Long">
+        select user_id from registration where contest_id = #{contestId} and status = 'approved'
+    </select>
+
+    <select id="getContestIdsByStudentId" resultType="java.lang.Long">
+        select distinct contest_id 
+        from registration 
+        where 
+            (user_id = #{studentId} or registration_id in (
+                select registration_id 
+                from team_member 
+                where member_user_id = #{studentId}
+            )) 
+            and status = 'approved'
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from registration
+        where registration_id = #{id}
+    </delete>
+
+    <select id="countRegistrations" resultType="java.lang.Integer">
+        select count(*)
+        from registration
+    </select>
+
+</mapper> 

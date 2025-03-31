@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.epoch.mapper.NotificationMapper">
+
+    <resultMap id="BaseResultMap" type="com.epoch.entity.Notification">
+        <id column="notification_id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="user_id" property="userId"/>
+        <result column="content" property="content"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        notification_id, title, user_id, content, type, status, created_time
+    </sql>
+
+    <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from notification
+        where notification_id = #{id}
+    </select>
+
+    <select id="listByUserIdAndCondition" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from notification
+        where user_id = #{userId}
+        <if test="type != null and type != ''">
+            and type = #{type}
+        </if>
+        <if test="status != null and status != ''">
+            and status = #{status}
+        </if>
+        order by created_time desc
+    </select>
+
+    <select id="countUnreadByUserId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        select count(*)
+        from notification
+        where user_id = #{userId}
+        and status = 'unread'
+    </select>
+
+    <insert id="insert" parameterType="com.epoch.entity.Notification" useGeneratedKeys="true" keyProperty="id" keyColumn="notification_id">
+        insert into notification (title, user_id, content, type, status, created_time)
+        values (#{title}, #{userId}, #{content}, #{type}, #{status}, now())
+    </insert>
+
+    <update id="updateStatus">
+        update notification
+        set status = #{status}
+        where notification_id = #{id}
+    </update>
+
+    <update id="markAllAsRead" parameterType="java.lang.Long">
+        update notification
+        set status = 'read'
+        where user_id = #{userId}
+        and status = 'unread'
+    </update>
+
+</mapper> 

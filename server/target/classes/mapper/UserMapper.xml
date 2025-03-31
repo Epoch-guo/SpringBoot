@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.epoch.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.epoch.entity.User">
+        <id column="user_id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="role" property="role"/>
+        <result column="status" property="status"/>
+        <result column="created_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id, username, password, email, phone, role, status, created_time
+    </sql>
+
+    <select id="getByUsername" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where username = #{username}
+    </select>
+
+    <select id="getByStudentId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where username = #{studentId}
+    </select>
+
+    <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where user_id = #{id}
+    </select>
+
+    <select id="listStudentIdsByClassId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        select user_id
+        from user
+        where role = 'student'
+    </select>
+
+    <select id="listAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+    </select>
+
+    <select id="listStudents" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where role = 'student'
+        and status = 'active'
+    </select>
+
+    <insert id="insert" parameterType="com.epoch.entity.User" useGeneratedKeys="true" keyProperty="id" keyColumn="user_id">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null">
+                username,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="role != null">
+                role,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="username != null">
+                #{username},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="email != null">
+                #{email},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+            <if test="role != null">
+                #{role},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.epoch.entity.User">
+        update user
+        <set>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="role != null">
+                role = #{role},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where user_id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        update user
+        set status = #{status}
+        where user_id = #{id}
+    </update>
+
+    <update id="updateRole">
+        update user
+        set role = #{role}
+        where user_id = #{id}
+    </update>
+
+    <update id="updatePassword">
+        update user
+        set password = #{password}
+        where user_id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from user
+        where user_id = #{id}
+    </delete>
+
+    <select id="listByCondition" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (
+                    username like concat('%', #{keyword}, '%')
+                    or email like concat('%', #{keyword}, '%')
+                    or phone like concat('%', #{keyword}, '%')
+                )
+            </if>
+            <if test="role != null and role != ''">
+                and role = #{role}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        order by created_time desc
+    </select>
+
+    <select id="getUsersByRole" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where role = #{role} and status = 'active'
+    </select>
+
+    <select id="listByRole" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where role = #{role} and status = 'active'
+    </select>
+
+    <select id="countUsers" resultType="java.lang.Integer">
+        select count(*)
+        from user
+        where status = 'active'
+    </select>
+
+    <select id="countByRole" resultType="java.lang.Integer">
+        select count(*)
+        from user
+        where role = #{role} and status = 'active'
+    </select>
+
+</mapper> 

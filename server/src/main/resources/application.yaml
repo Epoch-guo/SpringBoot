@@ -1,0 +1,80 @@
+server:
+  port: 8080
+
+
+springdoc: # 配置springdoc-openapi，用于文档化和访问API
+  default-flat-param-object: true
+  swagger-ui:
+    path: /swagger-ui.html  # Swagger UI的访问路径
+    tags-sorter: alpha      # 按字母顺序排序标签
+    operations-sorter: alpha  # 按字母顺序排序操作
+  api-docs:
+    path: /v3/api-docs  # API文档的访问路径
+  group-configs:
+    - group: Api  # API分组名称
+      paths-to-match: '/**'  # 匹配所有路径
+      packages-to-scan: com.epoch.controller  # 扫描的包，用于自动发现API
+
+
+knife4j:
+  enable: true
+  setting:
+    swagger-model-name: Entity
+    enable-document-manage: true
+    enable-footer-custom: true
+    footer-custom-content: Competition Management System for the School of Information Engineering
+  documents:
+    - group: Api
+      name: Markdown
+      locations: classpath:markdown/*
+
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  datasource:
+    druid:
+      driver-class-name: ${sky.datasource.driver-class-name}
+      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: ${sky.datasource.username}
+      password: ${sky.datasource.password}
+
+
+mybatis:
+  #mapper配置文件
+  type-aliases-package: com.epoch.entity
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    database-id: mysql
+
+
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: token
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 86400
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: true
+  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: true
+
+
+logging:
+  level:
+    com:
+      epoch:
+        mapper: debug          # 映射层日志级别为 debug
+        service: info        # 服务层日志级别为 info
+        controller: info     # 控制器层日志级别为 info
+
+

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.epoch.mapper.TeamMemberMapper">
+
+    <resultMap id="BaseResultMap" type="com.epoch.entity.TeamMember">
+        <id column="registration_id" property="registrationId"/>
+        <id column="member_user_id" property="memberUserId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        registration_id, member_user_id
+    </sql>
+
+    <insert id="insert" parameterType="com.epoch.entity.TeamMember">
+        insert into team_member (registration_id, member_user_id)
+        values (#{registrationId}, #{memberUserId})
+    </insert>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into team_member (registration_id, member_user_id)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.registrationId}, #{item.memberUserId})
+        </foreach>
+    </insert>
+
+    <select id="listByRegistrationId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from team_member
+        where registration_id = #{registrationId}
+    </select>
+
+    <select id="listByMemberUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from team_member
+        where member_user_id = #{memberUserId}
+    </select>
+
+    <select id="getByRegistrationIdAndMemberUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from team_member
+        where registration_id = #{registrationId} and member_user_id = #{memberUserId}
+    </select>
+
+    <delete id="deleteByRegistrationId" parameterType="java.lang.Long">
+        delete from team_member
+        where registration_id = #{registrationId}
+    </delete>
+
+    <delete id="deleteByRegistrationIdAndMemberUserId">
+        delete from team_member
+        where registration_id = #{registrationId} and member_user_id = #{memberUserId}
+    </delete>
+
+</mapper> 

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.epoch.mapper.LogMapper">
+
+    <resultMap id="BaseResultMap" type="com.epoch.entity.Log">
+        <id column="log_id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="action_type" property="actionType"/>
+        <result column="ip_address" property="ipAddress"/>
+        <result column="timestamp" property="timestamp"/>
+        <result column="details" property="details"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        log_id, user_id, action_type, ip_address, timestamp, details
+    </sql>
+
+    <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from log
+        where log_id = #{id}
+    </select>
+
+    <select id="listByCondition" resultMap="BaseResultMap">
+        select
+        l.<include refid="Base_Column_List"/>, u.username
+        from log l
+        left join user u on l.user_id = u.user_id
+        <where>
+            <if test="startTime != null">
+                and l.timestamp &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and l.timestamp &lt;= #{endTime}
+            </if>
+            <if test="actionType != null and actionType != ''">
+                and l.action_type = #{actionType}
+            </if>
+        </where>
+        order by l.timestamp desc
+    </select>
+
+    <insert id="insert" parameterType="com.epoch.entity.Log" useGeneratedKeys="true" keyProperty="id" keyColumn="log_id">
+        insert into log (user_id, action_type, ip_address, timestamp, details)
+        values (#{userId}, #{actionType}, #{ipAddress}, now(), #{details})
+    </insert>
+
+    <delete id="deleteBeforeTime" parameterType="java.time.LocalDateTime">
+        delete from log
+        where timestamp &lt; #{time}
+    </delete>
+
+</mapper> 

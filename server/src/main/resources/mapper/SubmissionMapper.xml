@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.epoch.mapper.SubmissionMapper">
+
+    <resultMap id="BaseResultMap" type="com.epoch.entity.Submission">
+        <id column="submission_id" property="id"/>
+        <result column="contest_id" property="contestId"/>
+        <result column="student_id" property="studentId"/>
+        <result column="content" property="content"/>
+        <result column="attachment_path" property="attachmentPath"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        submission_id, contest_id, student_id, content, attachment_path, status, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.epoch.entity.Submission" useGeneratedKeys="true" keyProperty="id" keyColumn="submission_id">
+        insert into submission
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contestId != null">
+                contest_id,
+            </if>
+            <if test="studentId != null">
+                student_id,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="attachmentPath != null">
+                attachment_path,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            create_time,
+            update_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contestId != null">
+                #{contestId},
+            </if>
+            <if test="studentId != null">
+                #{studentId},
+            </if>
+            <if test="content != null">
+                #{content},
+            </if>
+            <if test="attachmentPath != null">
+                #{attachmentPath},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            now(),
+            now(),
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.epoch.entity.Submission">
+        update submission
+        <set>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="attachmentPath != null">
+                attachment_path = #{attachmentPath},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            update_time = now(),
+        </set>
+        where submission_id = #{id}
+    </update>
+
+    <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from submission
+        where submission_id = #{id}
+    </select>
+
+    <select id="listByContestId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from submission
+        where contest_id = #{contestId}
+    </select>
+
+    <select id="getByStudentIdAndContestId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from submission
+        where student_id = #{studentId}
+        and contest_id = #{contestId}
+    </select>
+
+    <select id="listByStudentId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from submission
+        where student_id = #{studentId}
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from submission
+        where submission_id = #{id}
+    </delete>
+
+    <!-- 获取待评分的提交列表 -->
+    <select id="listPendingSubmissions" resultMap="BaseResultMap">
+        SELECT s.*
+        FROM submission s
+        LEFT JOIN score sc ON s.submission_id = sc.submission_id
+        WHERE s.contest_id = #{contestId}
+        AND sc.score_id IS NULL
+        ORDER BY s.create_time DESC
+    </select>
+
+    <!-- 获取已评分的提交列表 -->
+    <select id="listScoredSubmissions" resultMap="BaseResultMap">
+        SELECT s.*
+        FROM submission s
+        INNER JOIN score sc ON s.submission_id = sc.submission_id
+        WHERE s.contest_id = #{contestId}
+        ORDER BY s.create_time DESC
+    </select>
+
+    <!-- 根据学生ID和比赛ID获取提交记录列表 -->
+    <select id="listByStudentIdAndContestId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from submission
+        where student_id = #{studentId}
+        and contest_id = #{contestId}
+        order by create_time desc
+    </select>
+
+    <select id="listByContestIdAndStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from submission
+        where contest_id = #{contestId} and status = #{status}
+    </select>
+    
+    <select id="countByContestId" resultType="java.lang.Integer">
+        select count(*)
+        from submission
+        where contest_id = #{contestId}
+    </select>
+    
+    <select id="countByContestIdAndStatus" resultType="java.lang.Integer">
+        select count(*)
+        from submission
+        where contest_id = #{contestId} and status = #{status}
+    </select>
+
+</mapper> 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.epoch.mapper.ConfigMapper">
+
+    <resultMap id="BaseResultMap" type="com.epoch.entity.Config">
+        <id column="config_key" property="key"/>
+        <result column="config_value" property="value"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        config_key, config_value, update_time
+    </sql>
+
+    <select id="getByKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from config
+        where config_key = #{key}
+    </select>
+
+    <select id="listAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from config
+    </select>
+
+    <insert id="insert" parameterType="com.epoch.entity.Config">
+        insert into config (config_key, config_value, update_time)
+        values (#{key}, #{value}, now())
+    </insert>
+
+    <update id="update" parameterType="com.epoch.entity.Config">
+        update config
+        set config_value = #{value},
+            update_time = now()
+        where config_key = #{key}
+    </update>
+
+    <delete id="deleteByKey" parameterType="java.lang.String">
+        delete from config
+        where config_key = #{key}
+    </delete>
+
+</mapper> 

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.epoch.mapper.QuestionMapper">
+
+    <resultMap id="BaseResultMap" type="com.epoch.entity.Question">
+        <id column="question_id" property="id"/>
+        <result column="contest_id" property="contestId"/>
+        <result column="type" property="type"/>
+        <result column="content" property="content"/>
+        <result column="standard_answer" property="standardAnswer"/>
+        <result column="scoring_criteria" property="scoringCriteria"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        question_id, contest_id, type, content, standard_answer, scoring_criteria
+    </sql>
+
+    <insert id="insert" parameterType="com.epoch.entity.Question" useGeneratedKeys="true" keyProperty="id" keyColumn="question_id">
+        insert into question
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contestId != null">
+                contest_id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="standardAnswer != null">
+                standard_answer,
+            </if>
+            <if test="scoringCriteria != null">
+                scoring_criteria,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contestId != null">
+                #{contestId},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="content != null">
+                #{content},
+            </if>
+            <if test="standardAnswer != null">
+                #{standardAnswer},
+            </if>
+            <if test="scoringCriteria != null">
+                #{scoringCriteria},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into question
+        (contest_id, type, content, standard_answer, scoring_criteria)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.contestId}, #{item.type}, #{item.content}, #{item.standardAnswer}, #{item.scoringCriteria})
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.epoch.entity.Question">
+        update question
+        <set>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="standardAnswer != null">
+                standard_answer = #{standardAnswer},
+            </if>
+            <if test="scoringCriteria != null">
+                scoring_criteria = #{scoringCriteria},
+            </if>
+        </set>
+        where question_id = #{id}
+    </update>
+
+    <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from question
+        where question_id = #{id}
+    </select>
+
+    <select id="listAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from question
+        order by question_id desc
+    </select>
+
+    <select id="listByContestId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from question
+        where contest_id = #{contestId}
+    </select>
+
+    <select id="listAllContestIds" resultType="java.lang.Long">
+        select distinct contest_id
+        from question
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from question
+        where question_id = #{id}
+    </delete>
+
+    <delete id="deleteByContestId" parameterType="java.lang.Long">
+        delete from question
+        where contest_id = #{contestId}
+    </delete>
+
+</mapper> 

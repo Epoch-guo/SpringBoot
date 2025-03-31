@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.epoch.mapper.ContestMapper">
+
+    <resultMap id="BaseResultMap" type="com.epoch.entity.Contest">
+        <id column="contest_id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="rules" property="rules"/>
+        <result column="awards" property="awards"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="status" property="status"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        contest_id, title, description, start_time, end_time, rules, awards, creator_id, status, created_time
+    </sql>
+
+    <insert id="insert" parameterType="com.epoch.entity.Contest" useGeneratedKeys="true" keyProperty="id" keyColumn="contest_id">
+        insert into contest
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null">
+                title,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="startTime != null">
+                start_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="rules != null">
+                rules,
+            </if>
+            <if test="awards != null">
+                awards,
+            </if>
+            <if test="creatorId != null">
+                creator_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null">
+                #{title},
+            </if>
+            <if test="description != null">
+                #{description},
+            </if>
+            <if test="startTime != null">
+                #{startTime},
+            </if>
+            <if test="endTime != null">
+                #{endTime},
+            </if>
+            <if test="rules != null">
+                #{rules},
+            </if>
+            <if test="awards != null">
+                #{awards},
+            </if>
+            <if test="creatorId != null">
+                #{creatorId},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.epoch.entity.Contest">
+        update contest
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+            <if test="rules != null">
+                rules = #{rules},
+            </if>
+            <if test="awards != null">
+                awards = #{awards},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where contest_id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        update contest
+        set status = #{status}
+        where contest_id = #{id}
+    </update>
+
+    <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from contest
+        where contest_id = #{id}
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from contest
+        <where>
+            <if test="status != null and status != ''">
+                status = #{status}
+            </if>
+        </where>
+        order by created_time desc
+    </select>
+
+    <select id="listByCreatorId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from contest
+        where creator_id = #{creatorId}
+        order by created_time desc
+    </select>
+
+    <select id="listByCreatorIdAndStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from contest
+        where creator_id = #{creatorId}
+        <if test="status != null and status != ''">
+            and status = #{status}
+        </if>
+        order by created_time desc
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from contest
+        where contest_id = #{id}
+    </delete>
+
+    <select id="listByStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from contest
+        where status = #{status}
+        order by start_time desc
+    </select>
+
+    <select id="listAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from contest
+        order by created_time desc
+    </select>
+    
+    <select id="countContests" resultType="java.lang.Integer">
+        select count(*)
+        from contest
+    </select>
+    
+    <select id="countContestsByStatus" resultType="java.lang.Integer">
+        select count(*)
+        from contest
+        where status = #{status}
+    </select>
+
+</mapper> 
