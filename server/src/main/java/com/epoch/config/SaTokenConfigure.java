@@ -27,6 +27,8 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                         "/api/logout",
                         // 注册接口
                         "/api/auth/register",
+                        // 公共API接口
+                        "/api/public/**",
                         // Knife4j 核心路径
                         "/doc.html",                // Knife4j 前端页面
                         "/webjars/**",               // 静态资源（JS/CSS）

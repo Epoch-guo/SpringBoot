@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>com.epoch</groupId>
-    <artifactId>GraduationProject</artifactId>
+    <artifactId>CompetitionSystem</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -27,9 +27,7 @@
         <knife4j>4.5.0</knife4j>
         <mysql>8.0.33</mysql>
         <druid>1.2.23</druid>
-        <mysql>8.0.33</mysql>
         <satoken>1.39.0</satoken>
-
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -56,20 +54,14 @@
                 <version>${knife4j}</version>
             </dependency>
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql}</version>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-3-starter</artifactId>
                 <version>${druid}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql}</version>
             </dependency>
 
             <dependency>

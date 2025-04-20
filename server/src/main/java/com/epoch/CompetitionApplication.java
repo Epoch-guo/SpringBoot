@@ -6,10 +6,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SkyApplication{
-    private static final Logger log = LoggerFactory.getLogger(SkyApplication.class);
+public class CompetitionApplication {
+    private static final Logger log = LoggerFactory.getLogger(CompetitionApplication.class);
     public static void main(String[] args) {
-        SpringApplication.run(SkyApplication.class, args);
-        log.info("SkyApplication started successfully.");
+        SpringApplication.run(CompetitionApplication.class, args);
+        log.info("CompetitionApplication started successfully.");
     }
 }

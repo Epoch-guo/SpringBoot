@@ -143,4 +143,17 @@ public interface ContestService {
      * @return 各竞赛参与度统计数据
      */
     List<Map<String, Object>> getParticipationStatistics();
+    
+    /**
+     * 获取进行中的竞赛列表（首页展示）
+     * @param limit 获取条数
+     * @return 竞赛列表
+     */
+    List<ContestListVO> getOngoingContests(Integer limit);
+    
+    /**
+     * 获取所有竞赛数量
+     * @return 竞赛总数
+     */
+    int countAllContests();
 } 

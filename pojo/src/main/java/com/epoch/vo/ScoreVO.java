@@ -1,50 +1,29 @@
 package com.epoch.vo;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 /**
- * 评分视图对象
+ * 评分VO
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Schema(description = "评分展示对象")
 public class ScoreVO {
     
-    @Schema(description = "评分ID")
-    private Long scoreId;
+    private Long id;                  // 评分ID
+    private Long submissionId;        // 提交ID
+    private Long teacherId;           // 教师ID
+    private String teacherName;       // 教师姓名
+    private Integer score;            // 分数
+    private String comment;           // 评语
+    private LocalDateTime createTime; // 创建时间
+    private LocalDateTime updateTime; // 更新时间
+    private Long contestId;           // 竞赛ID
+    private String contestTitle;      // 竞赛标题
+    private Long studentId;           // 学生ID
+    private String studentName;       // 学生姓名
     
-    @Schema(description = "提交ID")
-    private Long submissionId;
-    
-    @Schema(description = "竞赛标题")
-    private String contestTitle;
-    
-    @Schema(description = "题目内容")
-    private String questionContent;
-    
-    @Schema(description = "学生姓名")
-    private String studentName;
-    
-    @Schema(description = "评分教师姓名")
-    private String teacherName;
-    
-    @Schema(description = "分数")
-    private Integer score;
-    
-    @Schema(description = "评语")
-    private String comment;
-    
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
-    
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
+    // 兼容方法
+    public void setScoreId(Long id) {
+        this.id = id;
+    }
 } 

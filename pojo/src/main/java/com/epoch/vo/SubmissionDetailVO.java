@@ -1,59 +1,43 @@
 package com.epoch.vo;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 提交详情VO
  */
 @Data
-@Schema(description = "提交详情展示对象")
 public class SubmissionDetailVO {
     
-    @Schema(description = "提交ID")
-    private Long submissionId;
+    private Long id;                  // 提交ID
+    private Long contestId;           // 竞赛ID
+    private String contestTitle;      // 竞赛标题
+    private Long studentId;           // 学生ID
+    private String studentName;       // 学生姓名
+    private String studentNumber;     // 学号
+    private String content;           // 提交内容
+    private String attachmentPath;    // 附件路径
+    private Integer status;           // 状态
+    private Date createTime;          // 创建时间
+    private Date updateTime;          // 更新时间
     
-    @Schema(description = "竞赛ID")
-    private Long contestId;
+    // 评分相关信息
+    private Long scoreId;             // 评分ID
+    private Long teacherId;           // 教师ID
+    private String teacherName;       // 教师姓名
+    private Integer score;            // 分数
+    private String comment;           // 评语
+    private Date scoreTime;           // 评分时间
     
-    @Schema(description = "竞赛标题")
-    private String contestTitle;
+    // 兼容方法
+    public void setSubmissionId(Long id) {
+        this.id = id;
+    }
     
-    @Schema(description = "学生ID")
-    private Long studentId;
-    
-    @Schema(description = "学生姓名")
-    private String studentName;
-    
-    @Schema(description = "提交内容")
-    private String content;
-    
-    @Schema(description = "附件路径")
-    private String attachmentPath;
-    
-    @Schema(description = "状态")
-    private Integer status;
-    
-    @Schema(description = "提交时间")
-    private LocalDateTime submitTime;
-    
-    @Schema(description = "评分ID")
-    private Long scoreId;
-    
-    @Schema(description = "分数")
-    private Integer score;
-    
-    @Schema(description = "评语")
-    private String comment;
-    
-    @Schema(description = "评分教师ID")
-    private Long teacherId;
-    
-    @Schema(description = "评分教师姓名")
-    private String teacherName;
-    
-    @Schema(description = "评分时间")
-    private LocalDateTime scoreTime;
+    public void setSubmitTime(LocalDateTime createTime) {
+        if (createTime != null) {
+            this.createTime = java.sql.Timestamp.valueOf(createTime);
+        }
+    }
 } 

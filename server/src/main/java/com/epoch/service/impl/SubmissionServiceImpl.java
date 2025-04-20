@@ -390,7 +390,7 @@ public class SubmissionServiceImpl implements SubmissionService {
             vo.setScore(score.getScore());
             vo.setComment(score.getComment());
             vo.setTeacherId(score.getTeacherId());
-            vo.setScoreTime(java.sql.Timestamp.valueOf(score.getCreateTime()));
+            vo.setScoreTime(score.getCreateTime());
             
             // 获取教师信息
             User teacher = userMapper.getById(score.getTeacherId());

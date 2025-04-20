@@ -173,8 +173,8 @@ public class ScoreServiceImpl implements ScoreService {
             vo.setScore(score.getScore());
             vo.setComment(score.getComment());
             vo.setSubmissionId(submission.getId());
-            vo.setSubmitTime(Date.from(submission.getCreateTime().atZone(ZoneId.systemDefault()).toInstant()));
-            vo.setScoreTime(Date.from(score.getCreateTime().atZone(ZoneId.systemDefault()).toInstant()));
+            vo.setSubmitTime(submission.getCreateTime());
+            vo.setScoreTime(score.getCreateTime());
             vo.setTeacherId(score.getTeacherId());
             vo.setTeacherName(teacher != null ? teacher.getUsername() : null);
             

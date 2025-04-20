@@ -1,51 +1,24 @@
 package com.epoch.vo;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.Map;
 
 /**
- * 仪表盘统计数据展示对象
+ * 统计仪表盘VO
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Schema(description = "仪表盘统计数据展示对象")
 public class StatisticsDashboardVO {
     
-    @Schema(description = "总竞赛数量")
-    private Integer totalContests;
-    
-    @Schema(description = "总用户数量")
-    private Integer totalUsers;
-    
-    @Schema(description = "学生数量")
-    private Integer totalStudents;
-    
-    @Schema(description = "教师数量")
-    private Integer totalTeachers;
-    
-    @Schema(description = "总报名数量")
-    private Integer totalRegistrations;
-    
-    @Schema(description = "进行中的竞赛数量")
-    private Integer ongoingContests;
-    
-    @Schema(description = "已结束的竞赛数量")
-    private Integer endedContests;
-    
-    @Schema(description = "未开始的竞赛数量")
-    private Integer pendingContests;
-    
-    @Schema(description = "总提交数量")
-    private Integer totalSubmissions;
-    
-    @Schema(description = "已评分提交数量")
-    private Integer scoredSubmissions;
-    
-    @Schema(description = "待评分提交数量")
-    private Integer pendingSubmissions;
+    private Integer totalUsers;           // 总用户数
+    private Integer totalStudents;        // 学生数量
+    private Integer totalTeachers;        // 教师数量
+    private Integer totalContests;        // 竞赛总数
+    private Integer ongoingContests;      // 进行中竞赛数
+    private Integer endedContests;        // 已结束竞赛数
+    private Integer pendingContests;      // 待开始竞赛数
+    private Integer totalRegistrations;   // 总报名数
+    private Integer totalSubmissions;     // 总提交数
+    private Integer scoredSubmissions;    // 已评分提交数
+    private Integer pendingSubmissions;   // 待评分提交数
+    private Map<String, Object> scoreStatistics;  // 评分统计数据
 } 

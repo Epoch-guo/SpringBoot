@@ -306,16 +306,17 @@ public class ContestServiceImpl implements ContestService {
      */
     @Override
     public PageResult pageQuery(int page, int pageSize, String status) {
-        // 根据角色进行权限控制
-        List<Contest> contestList;
-        long total;
-        
-        // TODO: 此处需要实现基于当前用户角色的判断
-        // 由于SecurityUtils存在编译问题，暂时返回所有竞赛
         PageHelper.startPage(page, pageSize);
-        Page<Contest> contestPage = (Page<Contest>) contestMapper.list(status);
-        contestList = contestPage.getResult();
-        total = contestPage.getTotal();
+        
+        List<Contest> contestList;
+        if (status != null && !status.isEmpty()) {
+            contestList = contestMapper.listByStatus(status);
+        } else {
+            contestList = contestMapper.list(null);  // null表示不筛选状态
+        }
+        
+        Page<Contest> pageResult = (Page<Contest>) contestList;
+        long total = pageResult.getTotal();
         
         List<ContestListVO> contestListVOS = new ArrayList<>();
         for (Contest contest : contestList) {
@@ -681,11 +682,11 @@ public class ContestServiceImpl implements ContestService {
         vo.setDescription(contest.getDescription());
         vo.setStartTime(contest.getStartTime());
         vo.setEndTime(contest.getEndTime());
+        vo.setCreatedTime(contest.getCreatedTime());
         vo.setRules(contest.getRules());
         vo.setAwards(contest.getAwards());
         vo.setCreatorId(contest.getCreatorId());
         vo.setStatus(contest.getStatus());
-        vo.setCreatedTime(contest.getCreatedTime());
         
         // 获取创建者信息
         User creator = userMapper.getById(contest.getCreatorId());
@@ -718,15 +719,8 @@ public class ContestServiceImpl implements ContestService {
         statistics.setContestId(contest.getId());
         statistics.setTitle(contest.getTitle());
         statistics.setStatus(contest.getStatus());
-        
-        // 转换日期类型
-        if (contest.getStartTime() != null) {
-            statistics.setStartTime(Date.from(contest.getStartTime().atZone(ZoneId.systemDefault()).toInstant()));
-        }
-        if (contest.getEndTime() != null) {
-            statistics.setEndTime(Date.from(contest.getEndTime().atZone(ZoneId.systemDefault()).toInstant()));
-        }
-        
+        statistics.setStartTime(contest.getStartTime());
+        statistics.setEndTime(contest.getEndTime());
         statistics.setCreatorId(contest.getCreatorId());
         
         // 获取创建者信息
@@ -812,5 +806,54 @@ public class ContestServiceImpl implements ContestService {
         }
         
         return statistics;
+    }
+    
+    /**
+     * 获取进行中的竞赛列表（首页展示）
+     * @param limit 获取条数
+     * @return 竞赛列表
+     */
+    @Override
+    public List<ContestListVO> getOngoingContests(Integer limit) {
+        // 查询进行中的竞赛
+        List<Contest> contests = contestMapper.listByStatus("ongoing");
+        if (contests == null || contests.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // 限制返回数量
+        if (contests.size() > limit) {
+            contests = contests.subList(0, limit);
+        }
+        
+        // 转换为VO对象
+        List<ContestListVO> result = new ArrayList<>();
+        for (Contest contest : contests) {
+            // 查询报名人数
+            int registrationCount = registrationMapper.countByContestId(contest.getId());
+            
+            ContestListVO vo = ContestListVO.builder()
+                    .contestId(contest.getId())
+                    .title(contest.getTitle())
+                    .startTime(contest.getStartTime())
+                    .endTime(contest.getEndTime())
+                    .status(contest.getStatus())
+                    .registrationCount(registrationCount)
+                    .build();
+            
+            result.add(vo);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 获取所有竞赛数量
+     * @return 竞赛总数
+     */
+    @Override
+    public int countAllContests() {
+        Integer count = contestMapper.countContests();
+        return count != null ? count : 0;
     }
 } 

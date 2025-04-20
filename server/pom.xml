@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.epoch</groupId>
-        <artifactId>GraduationProject</artifactId>
+        <artifactId>CompetitionSystem</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
@@ -48,8 +48,8 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>

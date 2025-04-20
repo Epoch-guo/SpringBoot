@@ -36,6 +36,48 @@ public class ContestController {
     private ContestService contestService;
 
     /**
+     * 获取首页竞赛信息（公开接口，无需权限）
+     * @param limit 获取条数
+     * @return 竞赛列表和统计信息
+     */
+    @GetMapping("/public/home/contests")
+    @Operation(summary = "获取首页竞赛信息", description = "官网首页展示的竞赛数据，包含进行中竞赛和竞赛统计")
+    public Result<Map<String, Object>> getHomeContests(@RequestParam(defaultValue = "5") @Parameter(description = "获取条数") Integer limit) {
+        log.info("获取首页竞赛信息，limit = {}", limit);
+        
+        // 获取进行中的竞赛
+        List<ContestListVO> ongoingContests = contestService.getOngoingContests(limit);
+        
+        // 获取竞赛统计信息
+        int totalContests = contestService.countAllContests();
+        int ongoingCount = contestService.countContestsByStatus("ongoing");
+        int endedCount = contestService.countContestsByStatus("ended");
+        int pendingCount = contestService.countContestsByStatus("pending");
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("ongoingContests", ongoingContests);
+        result.put("totalContests", totalContests);
+        result.put("ongoingCount", ongoingCount);
+        result.put("endedCount", endedCount);
+        result.put("pendingCount", pendingCount);
+        
+        return Result.success(result);
+    }
+
+    /**
+     * 获取竞赛详情（公开接口，无需权限）
+     * @param id 竞赛ID
+     * @return 竞赛详情
+     */
+    @GetMapping("/public/contests/{id}")
+    @Operation(summary = "获取竞赛公开详情", description = "获取竞赛的公开详细信息，无需登录")
+    public Result<ContestVO> getPublicContestDetail(@PathVariable @Parameter(description = "竞赛ID") Long id) {
+        log.info("获取公开竞赛详情：{}", id);
+        ContestVO contestVO = contestService.getContestDetail(id);
+        return Result.success(contestVO);
+    }
+
+    /**
      * 创建竞赛
      * @param contestDTO 竞赛信息
      * @return 创建结果
@@ -220,5 +262,37 @@ public class ContestController {
         boolean success = contestService.auditRegistration(id, status);
         
         return Result.success(null, MessageConstant.REGISTRATION_AUDIT_SUCCESS);
+    }
+
+    /**
+     * 分页查询公开竞赛列表（无需权限）
+     * @param page 页码
+     * @param pageSize 每页数量
+     * @param status 状态
+     * @return 分页结果
+     */
+    @GetMapping("/public/contests")
+    @Operation(summary = "获取公开竞赛列表", description = "分页查询公开的竞赛列表，无需登录")
+    public Result<PageResult> publicPageQuery(
+            @RequestParam(defaultValue = "1") @Parameter(description = "页码") Integer page,
+            @RequestParam(defaultValue = "10") @Parameter(description = "每页数量") Integer pageSize,
+            @RequestParam(required = false) @Parameter(description = "竞赛状态") String status) {
+        log.info("查询公开竞赛列表：page = {}, pageSize = {}, status = {}", page, pageSize, status);
+        PageResult pageResult = contestService.pageQuery(page, pageSize, status);
+        return Result.success(pageResult);
+    }
+    
+    /**
+     * 获取当前学生报名的竞赛列表
+     * @return 竞赛列表
+     */
+    @GetMapping("/student/contests")
+    @Operation(summary = "获取学生报名的竞赛列表", description = "获取当前登录学生报名的所有竞赛")
+    @SaCheckPermission("contest:view")
+    public Result<List<ContestVO>> getMyContests() {
+        Long studentId = StpUtil.getLoginIdAsLong();
+        log.info("查询学生报名的竞赛列表：studentId = {}", studentId);
+        List<ContestVO> contestVOList = contestService.getContestsByStudentId(studentId);
+        return Result.success(contestVOList);
     }
 } 
